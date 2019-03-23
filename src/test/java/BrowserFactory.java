@@ -8,6 +8,7 @@ import org.openqa.selenium.opera.OperaOptions;
 
 
 enum  BrowsersFactory {
+
     chrome {
         public WebDriver create() {
             updateProperty("chrome");
