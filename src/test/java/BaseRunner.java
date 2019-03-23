@@ -2,7 +2,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class BaseRunner {
@@ -28,14 +27,8 @@ public class BaseRunner {
         try {
             BrowsersFactory.valueOf(System.getProperty("browser"));
         } catch (NullPointerException | IllegalArgumentException e) {
-            browserName = randomBrowserPicker();
             System.setProperty("browser", browserName);
         }
         return BrowsersFactory.valueOf(browserName).create();
-    }
-    private String randomBrowserPicker() {
-        System.out.println("\nThe driver is not set. Running a random browser...");
-        int pick = new Random().nextInt(BrowsersFactory.values().length);
-        return BrowsersFactory.values()[pick].toString();
     }
 }
