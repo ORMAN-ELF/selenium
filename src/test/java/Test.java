@@ -1,8 +1,12 @@
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class Test extends BaseRunner {
 
@@ -104,7 +108,6 @@ public class Test extends BaseRunner {
         System.out.println("Тест №4");
         driver.get("https://www.tinkoff.ru/mobile-operator/tariffs/");
         Thread.sleep(1000);
-        clickButton("//span[@class='MvnoRegionConfirmation__option_v9PfP']");
         clickButton("//div[@class='MvnoRegionConfirmation__wrapper_1Jmmm MvnoRegionConfirmation__wrapperSelected_uxhv3']");
         clickButton("//div[contains(text(),'Москва и Московская обл.')]");
         Thread.sleep(2000);
@@ -116,12 +119,9 @@ public class Test extends BaseRunner {
         assertEquals("Москва и Московская область", driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Точки продаж'])[1]/following::div[13]")).getText());
         String priceMoscow = getPackagePrice();
         clickButton("//span[contains(text(),'Интернет')]");
-        selectFromList("name","internet",6);
-        //System.out.println(driver.findElement(By.xpath("//select[@name='internet']/following::div[1]/div")).getText());
-        //select[@name='internet']/following::div[1]/div
-        //select[@name='internet']/option[6]
+        clickButton("//span[contains(text(),'Безлимитный интернет')]");
         clickButton("//span[contains(text(),'Звонки')]");
-        selectFromList("name","calls",6);
+        clickButton("//span[contains(text(),'Безлимитные минуты')]");
         clickButton("//label[contains(text(),'Режим модема')]");
         clickButton("//label[contains(text(),'Безлимитные СМС')]");
 
@@ -133,9 +133,10 @@ public class Test extends BaseRunner {
         String priceKrasnodar = getPackagePrice();
         clickButton("//span[contains(text(),'Интернет')]");
         clickButton("//span[contains(text(),'Безлимитный интернет')]");
-        selectFromList("name","internet",6);
+        Thread.sleep(1000);
         clickButton("//span[contains(text(),'Звонки')]");
-        selectFromList("name","calls",6);
+        Thread.sleep(1000);
+        clickButton("//span[contains(text(),'Безлимитные минуты')]");
         clickButton("//label[contains(text(),'Режим модема')]");
         clickButton("//label[contains(text(),'Безлимитные СМС')]");
 
@@ -209,6 +210,7 @@ public class Test extends BaseRunner {
                 .replace(" \u20BD","");
     }
 
+
         // Для класса TextInput
         private void fillingTheField(String nameElement, String nameField, String setValue){
             driver.findElement(By.xpath("//input[@" + nameElement + "='" + nameField + "']")).sendKeys(setValue);
@@ -225,41 +227,44 @@ public class Test extends BaseRunner {
                             .getText());
         }
 
+
         // Для класса Button
         private void clickButton(String path){
             driver.findElement(By.xpath(path)).click();
         }
 
+
         //Для класса Select
         void selectFromList(String nameElement, String nameField, Integer numberRecord){
-            //select[@name='internet']/option[6]
-            driver.findElement(By.xpath("//select[@" + nameElement + "='" + nameField + "']/option[" + numberRecord + "]")).getText();
+            //  выбор значения из списка
+            WebDriverWait wait = new WebDriverWait(driver,30);
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//select[@" + nameElement + "='" + nameField + "']/option[" + numberRecord + "]")));
+            driver.findElement(By.xpath("//select[@" + nameElement + "='" + nameField + "']/option[" + numberRecord + "]")).click();
         }
 
         String getValueList(String nameElement, String nameField){
             //получения текущего значения списка
-            //select[@name='internet']/following::div[1]/div/div
             return driver.findElement(By.xpath("//select[@" + nameElement + "='" + nameField + "']/following::div[1]/div/div")).getText();
         }
 
-        //  для класса checkBox
-        void setActive(Boolean valueCheckBox){
 
+        //для класса checkBox
+        private String getTextCheckBox(Integer numberCheckBox){
+            //получение текста чек-бокса по его номеру на странице
+            List<WebElement> list = driver.findElements(By.xpath("//label[@class='CheckboxWithDescription__checkboxTitle_1a3dy']"));
+            return list.get(numberCheckBox).getText();
         }
 
-        String getTextCheckBox(){
-            //CheckboxWithDescription__checkbox_2E0r_
-            return "";
+        private String stateCheckBox(String nameCheckBox){
+            //получение текущего значения чек-бокса по имени
+            if (driver.findElements(By.xpath("//div[@class='Checkbox__container_AZX42 Checkbox__container_size_l_3He3r']/" +
+                    "following::label[contains(text(),'" + nameCheckBox + "')]")) != null){
+                return "Галочка не установлена";
+            } else if (driver.findElements(By.xpath("//div[@class='Checkbox__container_AZX42 Checkbox__container_checked_3yg5S Checkbox__container_size_l_3He3r']/" +
+                    "following::label[contains(text(),'" + nameCheckBox + "')]")) != null){
+                return "Галочка установлена";
+            }else {
+                return "Чек-бокс не найден";
+            }
         }
-
-        String stateCheckBox(String nameCheckBox){
-
-            //Checkbox__container_AZX42 Checkbox__container_checked_3yg5S Checkbox__container_size_l_3He3r
-            //Checkbox__container_AZX42 Checkbox__container_size_l_3He3r
-
-            //Checkbox__container_AZX42 Checkbox__container_size_l_3He3r
-            //Checkbox__container_AZX42 Checkbox__container_checked_3yg5S Checkbox__container_size_l_3He3r вкл
-            return "";
-        }
-
 }
