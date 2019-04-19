@@ -4,10 +4,10 @@ import org.slf4j.LoggerFactory;
 public class Log {
 
     private static final Logger logger
-            = LoggerFactory.getLogger(Test.class);
+            = LoggerFactory.getLogger(Tests.class);
 
     public static void main(String[] args) {
-        logger.info("Log from {}", Test.class.getSimpleName());
+        logger.info("Log from {}", Tests.class.getSimpleName());
 
     }
 }

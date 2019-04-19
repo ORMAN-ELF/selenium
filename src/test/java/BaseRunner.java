@@ -20,7 +20,7 @@ public class BaseRunner {
             tl.set(driver);
         }*/
         baseUrl = "https://www.tinkoff.ru/mobile-operator/tariffs/";
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 
        /* Runtime.getRuntime().addShutdownHook(new Thread(() -> {    // специально закомментированный код, см. файл README.md
             driver.quit();
@@ -37,6 +37,7 @@ public class BaseRunner {
         try {
             BrowsersFactory.valueOf(System.getProperty("browser"));
         } catch (NullPointerException | IllegalArgumentException e) {
+            browserName = "chrome";
             System.setProperty("browser", browserName);
         }
             return BrowsersFactory.valueOf(browserName).create();

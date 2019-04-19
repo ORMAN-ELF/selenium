@@ -1,18 +1,22 @@
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-public class Test extends BaseRunner {
+public class Tests extends BaseRunner {
 
     private Button button = new Button();
     private TextInput textInput = new TextInput();
+    private PricePackage pricePackage = new PricePackage();
 
-    @org.junit.Test
+    @Test
     public void testEmptyFields() throws InterruptedException {
         System.out.println("Тест №1");
         driver.get(baseUrl);
+        driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 
         button.clickButton(driver,"//*[contains(@class, 'fio-field')]");
         button.clickButton(driver,"//*[contains(@class, 'row_tel')]");
@@ -22,7 +26,7 @@ public class Test extends BaseRunner {
         textInput.getErrorField(driver,"Необходимо указать номер телефона", "row_tel");
     }
 
-    @org.junit.Test
+    @Test
     public void testIncorrectData() {
         System.out.println("Тест №2");
         driver.get(baseUrl);
@@ -74,13 +78,13 @@ public class Test extends BaseRunner {
                         "ui-form-field-error-message_ui-form']:last-child")).getText());
     }
 
-    @org.junit.Test
+    @Test
     public void testGoogle() throws InterruptedException {
         System.out.println("Тест №3");
         driver.get("https://www.google.ru/");
         Thread.sleep(3000);
         textInput.fillingTheField(driver,"title", "Поиск", "мобайл тинькофф");
-        button.clickButton(driver,"//div[@class='sbl1']//span[contains(text(),'мобайл тинькофф')]");
+        button.clickButton(driver,"//input[@value='Поиск в Google']");
         button.clickButton(driver,"(.//*[normalize-space(text()) and normalize-space(.)='Тарифы Тинькофф Мобайла'])[1]/following::cite[1]");
         Thread.sleep(7000);
         ArrayList<String> tabs2 = new ArrayList<>(driver.getWindowHandles());
@@ -97,7 +101,7 @@ public class Test extends BaseRunner {
         assertEquals(URL, baseUrl );
     }
 
-    @org.junit.Test
+    @Test
     public void testRegion() throws InterruptedException {
         System.out.println("Тест №4");
         driver.get(baseUrl);
@@ -114,7 +118,7 @@ public class Test extends BaseRunner {
         Thread.sleep(2000);
 
         assertEquals("Москва и Московская область", driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Точки продаж'])[1]/following::div[13]")).getText());
-        String priceMoscow = getPackagePrice();
+        String priceMoscow = pricePackage.getPackagePrice(driver);
         button.clickButton(driver,"//span[contains(text(),'Интернет')]");
         button.clickButton(driver,"//span[contains(text(),'Безлимитный интернет')]");
         button.clickButton(driver,"//span[contains(text(),'Звонки')]");
@@ -122,12 +126,12 @@ public class Test extends BaseRunner {
         button.clickButton(driver,"//label[contains(text(),'Режим модема')]");
         button.clickButton(driver,"//label[contains(text(),'Безлимитные СМС')]");
 
-        String priceFullPackageMoscow = getPackagePrice();
+        String priceFullPackageMoscow = pricePackage.getPackagePrice(driver);
         button.clickButton(driver,"//div[@class='MvnoRegionConfirmation__wrapper_1Jmmm MvnoRegionConfirmation__wrapperSelected_uxhv3']");
         button.clickButton(driver,"//div[contains(text(),'Краснодарский кр.')]");
         Thread.sleep(1000);
 
-        String priceKrasnodar = getPackagePrice();
+        String priceKrasnodar = pricePackage.getPackagePrice(driver);
         button.clickButton(driver,"//span[contains(text(),'Интернет')]");
         button.clickButton(driver,"//span[contains(text(),'Безлимитный интернет')]");
         Thread.sleep(1000);
@@ -137,7 +141,7 @@ public class Test extends BaseRunner {
         button.clickButton(driver,"//label[contains(text(),'Режим модема')]");
         button.clickButton(driver,"//label[contains(text(),'Безлимитные СМС')]");
 
-        String priceFullPackageKrasnodar = getPackagePrice();
+        String priceFullPackageKrasnodar = pricePackage.getPackagePrice(driver);
         if(priceMoscow.equals(priceKrasnodar)){
             System.out.println("Суммы общей цены тарифа с выбранными пакетами и сервисами по дефолту для регионов Москва и Краснодар одинаковые");
         } else {
@@ -150,7 +154,7 @@ public class Test extends BaseRunner {
         }
     }
 
-    @org.junit.Test
+    @Test
     public void notActiveButton() throws InterruptedException {
 
         System.out.println("Тест №5");
@@ -177,7 +181,7 @@ public class Test extends BaseRunner {
 
         button.clickButton(driver,"//label[contains(text(),'Мессенджеры')]");
         button.clickButton(driver,"//label[contains(text(),'Социальные сети')]");
-        String priceZero = getPackagePrice();
+        String priceZero = pricePackage.getPackagePrice(driver);
 
         button.clickButton(driver,"//*[contains(@class, 'fio-field')]");
         textInput.fillingTheField(driver,"name","fio", "Тест Тест Тест");
@@ -200,12 +204,5 @@ public class Test extends BaseRunner {
         }else {
             System.out.println("Кнопка нективна");
         }
-    }
-
-    private String getPackagePrice(){
-        return driver.findElement(By.xpath("//h3[contains(text(),'Общая цена:')]"))
-                .getText()
-                .replace("Общая цена: ", "")
-                .replace(" \u20BD","");
     }
 }
